@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SchoolWallet</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="header-title">
+                <h1>Admin Dashboard</h1>
+                <p class="header-info" id="userInfo"></p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openBatchScheduleModal()">Schedule Withdrawal Batch</button>
+                <button class="btn btn-secondary" onclick="openProfileModal()">Profile</button>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-header">Total Users</div>
+                <div class="card-body">
+                    <div class="stat-item">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Students: 120 | Parents: 36</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">Total Funds in System</div>
+                <div class="card-body">
+                    <div class="stat-item">
+                        <div class="stat-value">KSh 485,200</div>
+                        <div class="stat-label">Across all wallets</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">Today's Transactions</div>
+                <div class="card-body">
+                    <div class="stat-item">
+                        <div class="stat-value">47</div>
+                        <div class="stat-label">Total: KSh 8,920</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="card">
+            <div class="card-header">System Status & Overview</div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">45</div>
+                        <div class="stat-label">Pending Withdrawals</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Scheduled Batches</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Failed Transactions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">100%</div>
+                        <div class="stat-label">System Uptime</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Withdrawal Batches -->
+        <div class="card">
+            <div class="card-header">Withdrawal Batch Schedule</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Batch ID</th>
+                            <th>Scheduled Date</th>
+                            <th>Total Amount</th>
+                            <th>Requests</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="batchTable">
+                        <tr>
+                            <td>BATCH-001</td>
+                            <td>2026-03-10</td>
+                            <td>KSh 5,000</td>
+                            <td>12</td>
+                            <td><span class="badge badge-warning">PENDING</span></td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="viewBatchDetails('BATCH-001')">View</button>
+                                <button class="btn btn-danger" onclick="cancelBatch('BATCH-001')">Cancel</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pending Withdrawal Requests -->
+        <div class="card">
+            <div class="card-header">Pending Withdrawal Requests</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Student</th>
+                            <th>Amount</th>
+                            <th>Date Requested</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawalTable">
+                        <tr>
+                            <td>WD-001</td>
+                            <td>John Doe (STU001)</td>
+                            <td>KSh 500</td>
+                            <td>2026-03-06</td>
+                            <td>Cash from Cashier</td>
+                            <td><span class="badge badge-warning">PENDING</span></td>
+                            <td>
+                                <button class="btn btn-success" onclick="approveWithdrawal('WD-001')">Approve</button>
+                                <button class="btn btn-danger" onclick="rejectWithdrawal('WD-001')">Reject</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="card">
+            <div class="card-header">User Management</div>
+            <div class="card-body">
+                <div style="margin-bottom: 15px;">
+                    <button class="btn btn-primary" onclick="openAddUserModal()">Add New User</button>
+                    <button class="btn btn-secondary" onclick="openBulkUploadModal()">Bulk Upload Users</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Joined Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTable">
+                        <tr>
+                            <td>STU001</td>
+                            <td>John Doe</td>
+                            <td><span class="badge badge-info">STUDENT</span></td>
+                            <td><span class="badge badge-success">ACTIVE</span></td>
+                            <td>2026-01-15</td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="editUser('STU001')">Edit</button>
+                                <button class="btn btn-danger" onclick="deactivateUser('STU001')">Deactivate</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Transaction Audit Log -->
+        <div class="card">
+            <div class="card-header">Transaction Audit Log</div>
+            <div class="card-body">
+                <div style="margin-bottom: 15px;">
+                    <input type="text" id="auditFilter" placeholder="Search transactions..." style="padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px; width: 300px;">
+                    <button class="btn btn-secondary" onclick="filterAuditLog()">Search</button>
+                    <button class="btn btn-secondary" onclick="exportAuditLog()">Export CSV</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Timestamp</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditTable">
+                        <tr>
+                            <td>TXN-00147</td>
+                            <td>John Doe (STU001)</td>
+                            <td>WITHDRAWAL REQUEST</td>
+                            <td>KSh 500</td>
+                            <td>2026-03-07 10:30:22</td>
+                            <td><span class="badge badge-warning">PENDING</span></td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="viewTransactionDetails('TXN-00147')">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- System Logs -->
+        <div class="card">
+            <div class="card-header">System Logs</div>
+            <div class="card-body">
+                <textarea style="width: 100%; height: 200px; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px; font-family: monospace; font-size: 12px;" readonly>
+[2026-03-07 14:32:10] User STU001 logged in successfully
+[2026-03-07 14:15:45] Withdrawal request WD-001 submitted by STU001
+[2026-03-07 13:45:30] Parent PAR001 deposited KSh 500 to STU001
+[2026-03-07 13:20:15] Batch BATCH-001 scheduled for 2026-03-10
+[2026-03-07 12:50:05] Transaction TXN-00147 completed
+[2026-03-07 12:30:22] System backup completed successfully
+                </textarea>
+                <button class="btn btn-secondary" style="margin-top: 10px;" onclick="clearLogs()">Clear Logs</button>
+            </div>
+        </div>
+
+        <!-- Reports -->
+        <div class="card">
+            <div class="card-header">Reports & Analytics</div>
+            <div class="card-body">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="generateReport('daily')">Daily Report</button>
+                    <button class="btn btn-primary" onclick="generateReport('weekly')">Weekly Report</button>
+                    <button class="btn btn-primary" onclick="generateReport('monthly')">Monthly Report</button>
+                    <button class="btn btn-secondary" onclick="generateCustomReport()">Custom Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Schedule Modal -->
+    <div id="batchModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeBatchModal()">&times;</span>
+            <h2>Schedule Withdrawal Batch</h2>
+            <form id="batchForm">
+                <div class="form-group">
+                    <label for="batchDate">Batch Date:</label>
+                    <input type="date" id="batchDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="batchTime">Time:</label>
+                    <input type="time" id="batchTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="batchMaxAmount">Maximum Amount (KSh):</label>
+                    <input type="number" id="batchMaxAmount" placeholder="Leave empty for unlimited" />
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="batchAutoApprove">
+                        Auto-approve requests within limit
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Schedule Batch</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProfileModal()">&times;</span>
+            <h2>Administrator Profile</h2>
+            <div id="profileInfo">
+                <p><strong>Name:</strong> <span id="profileName"></span></p>
+                <p><strong>Admin ID:</strong> <span id="profileID"></span></p>
+                <p><strong>Department:</strong> <span id="profileDept"></span></p>
+                <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                <p><strong>Last Login:</strong> <span id="profileLastLogin"></span></p>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%; margin-top: 15px;" onclick="closeProfileModal()">Close</button>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin-dashboard.js"></script>
+</body>
+</html>

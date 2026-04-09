@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - SchoolWallet</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="header-title">
+                <h1>Student Wallet</h1>
+                <p class="header-info" id="userInfo"></p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openRequestWithdrawalModal()">Request Withdrawal</button>
+                <button class="btn btn-secondary" onclick="openProfileModal()">Profile</button>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid-2">
+            <!-- Balance Card -->
+            <div class="card balance-card">
+                <div style="text-align: center;">
+                    <div class="balance-label">Current Balance</div>
+                    <div style="margin: 20px 0;">
+                        <span class="balance-currency">KSh</span>
+                        <span class="balance-amount" id="balanceAmount">5,000</span>
+                    </div>
+                    <p style="margin: 15px 0; font-size: 12px; opacity: 0.9;">
+                        Total Deposited: <strong id="totalBalance">KSh 5,000</strong>
+                    </p>
+                    <p style="margin: 5px 0; font-size: 12px; opacity: 0.9;">
+                        Amount Spent: <strong id="amountSpent">KSh 850</strong>
+                    </p>
+                    <p style="margin-top: 15px; font-size: 11px; opacity: 0.7;">Last updated: <span id="lastUpdate">Just now</span></p>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card">
+                <div class="card-header">Balance Summary</div>
+                <div class="card-body">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Total Received</div>
+                            <div class="stat-value" id="statTotalReceived">KSh 5,000</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Total Spent</div>
+                            <div class="stat-value" id="statTotalSpent" style="color: #ef4444;">KSh 850</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Remaining</div>
+                            <div class="stat-value" id="statRemaining" style="color: #10b981;">KSh 4,150</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Withdrawal Status -->
+        <div class="card">
+            <div class="card-header">Pending Withdrawal Requests</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date Requested</th>
+                            <th>Amount</th>
+                            <th>Scheduled Batch</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawalTable">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #999;">No pending withdrawal requests</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="card">
+            <div class="card-header">Recent Transactions</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionTable">
+                        <tr>
+                            <td>2026-03-07</td>
+                            <td>Deposit from Parent</td>
+                            <td><span class="badge badge-success">Credit</span></td>
+                            <td>+KSh 500</td>
+                            <td>KSh 5,000</td>
+                        </tr>
+                        <tr>
+                            <td>2026-03-05</td>
+                            <td>Canteen Purchase</td>
+                            <td><span class="badge badge-danger">Debit</span></td>
+                            <td>-KSh 150</td>
+                            <td>KSh 4,500</td>
+                        </tr>
+                        <tr>
+                            <td>2026-03-02</td>
+                            <td>School Shop Purchase</td>
+                            <td><span class="badge badge-danger">Debit</span></td>
+                            <td>-KSh 200</td>
+                            <td>KSh 4,650</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Spending Insights -->
+        <div class="card">
+            <div class="card-header">Spending Insights</div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">KSh 3,200</div>
+                        <div class="stat-label">Average Monthly Spending</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">64%</div>
+                        <div class="stat-label">Spending on Food</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">KSh 1,800</div>
+                        <div class="stat-label">Remaining for Month</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdrawal Request Modal -->
+    <div id="withdrawalModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeWithdrawalModal()">&times;</span>
+            <h2>Request Withdrawal</h2>
+            <form id="withdrawalForm">
+                <div class="form-group">
+                    <label for="withdrawalAmount">Amount to Withdraw:</label>
+                    <input type="number" id="withdrawalAmount" placeholder="Enter amount" required>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawalMethod">Withdrawal Method:</label>
+                    <select id="withdrawalMethod" required>
+                        <option value="">Select Method</option>
+                        <option value="cash">Cash from Cashier</option>
+                        <option value="bank">Bank Transfer</option>
+                        <option value="parent">Transfer to Parent Account</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawalReason">Reason for Withdrawal:</label>
+                    <textarea id="withdrawalReason" placeholder="Explain why you need this withdrawal"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProfileModal()">&times;</span>
+            <h2>Student Profile</h2>
+            <div id="profileInfo">
+                <p><strong>Name:</strong> <span id="profileName"></span></p>
+                <p><strong>Student ID:</strong> <span id="profileID"></span></p>
+                <p><strong>Class:</strong> <span id="profileClass"></span></p>
+                <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%; margin-top: 15px;" onclick="closeProfileModal()">Close</button>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/student-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Portal - SchoolWallet</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="header-title">
+                <h1>Parent Portal</h1>
+                <p class="header-info" id="userInfo"></p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openDepositModal()">Deposit Funds</button>
+                <button class="btn btn-secondary" onclick="openProfileModal()">Profile</button>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Student Selection -->
+        <div class="card">
+            <div class="card-header">Select Student to Monitor</div>
+            <div class="card-body">
+                <select id="studentSelector" style="padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px; width: 100%; max-width: 300px;">
+                    <option value="">Choose a student...</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Student Overview -->
+        <div class="grid-2" id="studentOverviewGrid" style="display: none;">
+            <!-- Balance Card -->
+            <div class="card balance-card">
+                <div class="balance-label">Student Current Balance</div>
+                <div>
+                    <span class="balance-currency">KSh</span>
+                    <span class="balance-amount" id="studentBalance">0</span>
+                </div>
+            </div>
+
+            <!-- Student Info -->
+            <div class="card">
+                <div class="card-header">Student Information</div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> <span id="studentName"></span></p>
+                    <p><strong>ID:</strong> <span id="studentID"></span></p>
+                    <p><strong>Class:</strong> <span id="studentClass"></span></p>
+                    <p><strong>Email:</strong> <span id="studentEmail"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Spending Summary -->
+        <div class="card" id="spendingCard" style="display: none;">
+            <div class="card-header">Monthly Spending Summary</div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="monthlySpent">KSh 0</div>
+                        <div class="stat-label">Amount Spent</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="transactionCount">0</div>
+                        <div class="stat-label">Transactions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="largestExpense">KSh 0</div>
+                        <div class="stat-label">Largest Expense</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spending Categories -->
+        <div class="card" id="categoriesCard" style="display: none;">
+            <div class="card-header">Spending by Category</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Percentage</th>
+                            <th>Transactions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoriesTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Deposit History -->
+        <div class="card" id="depositHistoryCard" style="display: none;">
+            <div class="card-header">Your Deposits</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Confirmation ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="depositHistoryTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Student Transactions -->
+        <div class="card" id="transactionsCard" style="display: none;">
+            <div class="card-header">Recent Student Transactions</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Withdrawal Requests -->
+        <div class="card" id="withdrawalCard" style="display: none;">
+            <div class="card-header">Withdrawal Requests</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Scheduled Batch</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawalTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Spending Limits -->
+        <div class="card" id="limitsCard" style="display: none;">
+            <div class="card-header">Spending Limits & Controls</div>
+            <div class="card-body">
+                <form id="limitsForm">
+                    <div class="form-group">
+                        <label for="monthlyLimit">Monthly Spending Limit:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="monthlyLimit" placeholder="Enter amount" required>
+                            <button type="button" class="btn btn-primary" onclick="updateSpendingLimit()">Update</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dailyLimit">Daily Spending Limit:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="dailyLimit" placeholder="Enter amount" required>
+                            <button type="button" class="btn btn-primary" onclick="updateDailyLimit()">Update</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="enableNotifications">
+                            Enable transaction notifications via email/SMS
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDepositModal()">&times;</span>
+            <h2>Deposit Funds to Student Account</h2>
+            <form id="depositForm">
+                <div class="form-group">
+                    <label for="depositAmount">Amount to Deposit (KSh):</label>
+                    <input type="number" id="depositAmount" placeholder="Enter amount" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method:</label>
+                    <select id="paymentMethod" required onchange="handlePaymentMethodChange()">
+                        <option value="">Select Method</option>
+                        <option value="mpesa">M-Pesa (Safaricom)</option>
+                        <option value="card">Debit/Credit Card</option>
+                        <option value="bank">Bank Transfer</option>
+                        <option value="wallet">Digital Wallet</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="depositNote">Note (Optional):</label>
+                    <textarea id="depositNote" placeholder="Add a note for the deposit"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Proceed to Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProfileModal()">&times;</span>
+            <h2>Parent Profile</h2>
+            <div id="profileInfo">
+                <p><strong>Name:</strong> <span id="profileName"></span></p>
+                <p><strong>ID:</strong> <span id="profileID"></span></p>
+                <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%; margin-top: 15px;" onclick="closeProfileModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- M-Pesa Payment Modal -->
+    <div id="mpesaModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close" onclick="closeMpesaModal()">&times;</span>
+            <h2>M-Pesa Payment</h2>
+            <form id="mpesaForm">
+                <div class="form-group">
+                    <label for="mpesaPhone">Safaricom Number (254...):</label>
+                    <input type="text" id="mpesaPhone" placeholder="e.g., 254712345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="mpesaAmount">Amount (KSh):</label>
+                    <input type="number" id="mpesaAmount" placeholder="Amount" readonly style="background-color: #f3f4f6;">
+                </div>
+                <div class="form-group">
+                    <label for="mpesaPin">M-Pesa PIN:</label>
+                    <input type="password" id="mpesaPin" placeholder="Enter 4-digit PIN" maxlength="4" required>
+                </div>
+                <div style="background-color: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px; padding: 12px; margin-bottom: 15px; font-size: 13px;">
+                    <strong>⚠️ Security Notice:</strong> Never share your M-Pesa PIN. A valid PIN is required to complete the transaction.
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Confirm Payment</button>
+                <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeMpesaModal()">Cancel</button>
+            </form>
+            <div id="mpesaStatus" style="display: none; margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center;"></div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/parent-dashboard.js"></script>
+</body>
+</html>

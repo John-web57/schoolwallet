@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - SchoolWallet</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo-section">
+                <h1 class="app-title">SchoolWallet</h1>
+                <p class="app-subtitle">Create Your Account</p>
+            </div>
+
+            <form id="signupForm" class="login-form">
+                <div class="form-group">
+                    <label for="signupRole">I am a:</label>
+                    <select id="signupRole" required>
+                        <option value="">Select your role</option>
+                        <option value="student">Student</option>
+                        <option value="parent">Parent</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName">Full Name:</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name" required>
+                </div>
+
+                <div id="studentFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="studentID">Student ID:</label>
+                        <input type="text" id="studentID" placeholder="Your school ID number">
+                    </div>
+                    <div class="form-group">
+                        <label for="studentClass">Class/Form:</label>
+                        <input type="text" id="studentClass" placeholder="e.g., Form 4A">
+                    </div>
+                </div>
+
+                <div id="parentFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="linkedStudent">Link to Student ID:</label>
+                        <input type="text" id="linkedStudent" placeholder="Student's school ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="relationship">Relationship to Student:</label>
+                        <select id="relationship">
+                            <option value="">Select relationship</option>
+                            <option value="parent">Parent</option>
+                            <option value="guardian">Guardian</option>
+                            <option value="relative">Relative</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" placeholder="your.email@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" id="phone" placeholder="+1 (555) 123-4567" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Create a strong password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" id="confirmPassword" placeholder="Re-enter your password" required>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="agreeTerms" required>
+                        I agree to the Terms & Conditions
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-login">Create Account</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="../index.html">Already have an account? Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script>
+        // Handle role selection
+        document.getElementById('signupRole').addEventListener('change', function() {
+            const studentFields = document.getElementById('studentFields');
+            const parentFields = document.getElementById('parentFields');
+            const studentIdInput = document.getElementById('studentID');
+            const studentClassInput = document.getElementById('studentClass');
+            const linkedStudentInput = document.getElementById('linkedStudent');
+            const relationshipInput = document.getElementById('relationship');
+            
+            if (this.value === 'student') {
+                studentFields.style.display = 'block';
+                parentFields.style.display = 'none';
+                studentIdInput.required = true;
+                studentClassInput.required = true;
+                linkedStudentInput.required = false;
+                relationshipInput.required = false;
+            } else if (this.value === 'parent') {
+                studentFields.style.display = 'none';
+                parentFields.style.display = 'block';
+                studentIdInput.required = false;
+                studentClassInput.required = false;
+                linkedStudentInput.required = true;
+                relationshipInput.required = true;
+            } else {
+                studentFields.style.display = 'none';
+                parentFields.style.display = 'none';
+                studentIdInput.required = false;
+                studentClassInput.required = false;
+                linkedStudentInput.required = false;
+                relationshipInput.required = false;
+            }
+        });
+
+        // Handle signup form
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const role = document.getElementById('signupRole').value;
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+            
+            // Validation
+            if (!role || !fullName || !email || !phone || !password) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAlert('Password must be at least 6 characters long', 'error');
+                return;
+            }
+            
+            if (!agreeTerms) {
+                showAlert('You must agree to the Terms & Conditions', 'error');
+                return;
+            }
+
+            if (role === 'student') {
+                const admissionNumber = document.getElementById('studentID').value.trim();
+                const verifyResult = await authManager.verifyAdmission(admissionNumber);
+
+                if (!verifyResult.success || !verifyResult.valid) {
+                    showAlert(verifyResult.message || 'Invalid admission number', 'error');
+                    return;
+                }
+
+                const classFromSchool = verifyResult.student?.classForm;
+                const enteredClass = document.getElementById('studentClass').value.trim();
+                if (classFromSchool && enteredClass && classFromSchool !== enteredClass) {
+                    showAlert(`Class mismatch. Expected ${classFromSchool}.`, 'error');
+                    return;
+                }
+            } else if (role === 'parent') {
+                const linkedStudentID = document.getElementById('linkedStudent').value.trim();
+                
+                if (!linkedStudentID) {
+                    showAlert('Please enter your child\'s student ID', 'error');
+                    return;
+                }
+
+                const verifyResult = await authManager.verifyStudentID(linkedStudentID);
+
+                if (!verifyResult.success || !verifyResult.valid) {
+                    showAlert(verifyResult.message || 'Student ID not found. Please verify the ID is correct.', 'error');
+                    return;
+                }
+            }
+            
+            // Prepare user data
+            const userData = {
+                role: role,
+                fullName: fullName,
+                email: email,
+                phone: phone,
+                password: password
+            };
+            
+            if (role === 'student') {
+                userData.studentID = document.getElementById('studentID').value;
+                userData.class = document.getElementById('studentClass').value;
+            } else if (role === 'parent') {
+                userData.linkedStudent = document.getElementById('linkedStudent').value;
+                userData.relationship = document.getElementById('relationship').value;
+            }
+            
+            const result = await authManager.signup(userData);
+            
+            if (result.success) {
+                showAlert('Account created successfully! Redirecting to login...', 'success');
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 2000);
+            } else {
+                showAlert(result.message || 'Failed to create account', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
