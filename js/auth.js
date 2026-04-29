@@ -3,7 +3,7 @@ class AuthManager {
     constructor() {
         this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
         this.token = localStorage.getItem('authToken') || null;
-        this.apiBaseUrl = 'http://localhost:5000/api/v1';
+        this.apiBaseUrl = this.getApiBaseUrl();
         this.demoUsers = {
             student: {
                 userId: 'STU001',
@@ -41,6 +41,20 @@ class AuthManager {
                 }
             }
         };
+    }
+
+    getApiBaseUrl() {
+        const configuredUrl = window.SCHOOLWALLET_API_BASE_URL || localStorage.getItem('schoolwalletApiBaseUrl');
+        if (configuredUrl) {
+            return configuredUrl.replace(/\/$/, '');
+        }
+
+        const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+        if (isLocal) {
+            return 'http://localhost:5000/api/v1';
+        }
+
+        return `${window.location.origin}/api/v1`;
     }
 
     // Real authentication with backend API

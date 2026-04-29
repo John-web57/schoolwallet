@@ -2,6 +2,7 @@
 // File: backend/server.js
 
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
@@ -83,6 +84,16 @@ app.post('/api/v1/auth/reset-password', (req, res) => {
         message: 'If an account with that email exists, reset instructions have been sent.'
     });
 });
+
+// Serve the frontend from the same hosted service in production.
+// Only expose the public app folders, not backend files like .env.
+const frontendRoot = path.join(__dirname, '..');
+app.get('/', (req, res) => {
+    res.sendFile(path.join(frontendRoot, 'index.html'));
+});
+app.use('/css', express.static(path.join(frontendRoot, 'css')));
+app.use('/js', express.static(path.join(frontendRoot, 'js')));
+app.use('/pages', express.static(path.join(frontendRoot, 'pages')));
 
 // Database Connection Pool
 const pool = mysql.createPool({

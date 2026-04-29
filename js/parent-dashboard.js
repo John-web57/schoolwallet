@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function processMpesaPayment(phone, amount, pin) {
     try {
-        const response = await fetch('http://localhost:5000/api/v1/payments/mpesa', {
+        const response = await fetch(`${authManager.apiBaseUrl}/payments/mpesa`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
